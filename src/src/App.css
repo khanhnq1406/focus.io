@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap");
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url(https://wallpaperxyz.com/wp-content/uploads/Chill-Lofi-Background-Wallpaper-Full-HD-Free-Download-for-PC-Laptop-Macbook-231121-Wallpaperxyz.com-57.jpg);
+  background-size: cover;
+  justify-content: center;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+}
+
+.menu {
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+  border-radius: 10px;
+  background-color: hsla(0, 0%, 7%, 0.8);
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  -webkit-backdrop-filter: blur(30px);
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+}
+
+.btn-wrapper {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+}
+
+.btn {
+  background-color: transparent;
+  border: 0;
+  width: 35px;
+  height: 35px;
+  margin: 2px;
+}
+
+.btn::after {
+  content: attr(data-title);
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  background-color: #363636;
+  border-radius: 7px;
+  color: #fff;
+  display: flex;
+  gap: 6px;
+  line-height: 18px;
+  opacity: 0;
+  padding: 8px;
+  pointer-events: none;
+  position: absolute;
+  top: -50px;
+  text-align: center;
+  transition: all 0.1s ease;
+  white-space: nowrap;
+  margin-left: -25px;
+}
+.btn:hover::after {
+  opacity: 1;
+  transform: translateY(5px);
+}
+.btn:hover {
+  background-color: #5a544e;
+  border-radius: 10px;
+}
+.btn .icon {
+  /* float: left; */
+  width: 25px;
+  /* height: 40px; */
+  vertical-align: middle;
+  margin-left: -1px;
+}
+
+.insideBlock {
+  background-color: hsla(0, 0%, 100%, 0.05);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  border-radius: 8px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.youtube-url-form {
+  overflow: hidden;
+  display: flex;
+}
+.input {
+  background-color: rgba(18, 18, 18, 0.7);
+  padding: 5px;
+  border: 0;
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: rgba(199, 196, 193, 0.75);
+  flex-grow: 1;
+  outline: 0;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  width: 200px;
+}
+
+.input[data-placeholder]:empty:before {
+  box-sizing: border-box;
+  color: rgba(199, 196, 193, 0.75);
+  content: attr(data-placeholder);
+  cursor: text;
+  display: block;
+}
