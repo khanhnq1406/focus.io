@@ -108,6 +108,22 @@ body {
 
 .insideBlock.youtube {
   position: absolute;
-  top: 70px;
+  top: 80px;
   margin: 10px;
+}
+
+.btn-close {
+  position: absolute;
+  right: 2px;
+  /* margin: 3px; */
+  background-color: transparent;
+  border: 0;
+}
+.icon.close:hover {
+  opacity: 90%;
+}
+.icon.close {
+  width: 20px;
+  height: 20px;
+  opacity: 60%;
 }

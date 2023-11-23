@@ -110,9 +110,12 @@ function App() {
           }));
         }}
       >
+        <button className="btn-close" onClick={buttonYoutube}>
+          <img className="icon close" src="/images/close.png"></img>
+        </button>
         <div
           className="insideBlock"
-          style={{ width: youtube.width, margin: "10px" }}
+          style={{ width: youtube.width, margin: "20px" }}
         >
           <form onSubmit={(e) => youtubeUrl(e)}>
             <div className="youtube-url-form">
@@ -127,7 +130,7 @@ function App() {
                 <img
                   className="icon"
                   src="/images/send.png"
-                  style={{ opacity: "90%" }}
+                  style={{ opacity: "80%" }}
                 ></img>
               </button>
             </div>
@@ -139,7 +142,7 @@ function App() {
               videoId={youtube.youtubeUrl}
               opts={{
                 width: Math.round(youtube.width.match(/(\d+)/)[0]) - 46,
-                height: Math.round(youtube.height.match(/(\d+)/)[0]) - 120,
+                height: Math.round(youtube.height.match(/(\d+)/)[0]) - 125,
                 opts,
               }}
             />
@@ -154,10 +157,13 @@ function App() {
         default={{
           x: 300,
           y: 400,
-          width: 320,
-          height: 200,
+          width: 0,
+          height: 0,
         }}
       >
+        <button className="btn-close" onClick={buttonScenes}>
+          <img className="icon close" src="/images/close.png"></img>
+        </button>
         <div>
           <p>Scenes</p>
         </div>
