@@ -102,14 +102,12 @@ body {
   outline: 0;
   overflow: visible;
   overflow-wrap: anywhere;
-  word-break: break-word;
   width: 200px;
+  font-family: "Montserrat", sans-serif;
 }
 
-.input[data-placeholder]:empty:before {
-  box-sizing: border-box;
-  color: rgba(199, 196, 193, 0.75);
-  content: attr(data-placeholder);
-  cursor: text;
-  display: block;
+.insideBlock.youtube {
+  position: absolute;
+  top: 70px;
+  margin: 10px;
 }

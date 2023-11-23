@@ -1,14 +1,19 @@
 import "./App.css";
 import { Rnd } from "react-rnd";
 import { useState } from "react";
-
+import YouTube from "react-youtube";
 function App() {
-  const [active, setActive] = useState({
-    youtubeActive: "none",
-    scenesActive: "none",
+  const [styleState, setStyle] = useState({
+    youtube: {
+      youtubeActive: "none",
+      height: "320",
+      width: "400",
+      youtubeUrl: "",
+    },
+    scences: { scenesActive: "none", height: "", width: "" },
   });
 
-  const { youtubeActive, scenesActive } = active;
+  const { youtube, scences } = styleState;
 
   const style = function (isActive) {
     return {
@@ -20,25 +25,50 @@ function App() {
       backgroundColor: "hsla(0, 0%, 7%, 0.7)",
       backdropFilter: "blur(30px)",
       color: "hsla(0,0%,100%,0.8)",
+      flexWrap: "wrap",
     };
   };
   const buttonYoutube = function () {
-    setActive((active) => ({
-      ...active,
-      youtubeActive: youtubeActive === "flex" ? "none" : "flex",
+    setStyle((styleState) => ({
+      ...styleState,
+      youtube: {
+        ...styleState.youtube,
+        youtubeActive: youtube.youtubeActive === "flex" ? "none" : "flex",
+      },
     }));
   };
 
   const buttonScenes = function () {
-    setActive((active) => ({
-      ...active,
-      scenesActive: scenesActive === "flex" ? "none" : "flex",
+    setStyle((styleState) => ({
+      ...styleState,
+      scences: {
+        ...styleState.scences,
+        scenesActive: scences.scenesActive === "flex" ? "none" : "flex",
+      },
     }));
   };
 
-  const youtubeUrl = function (e) {
-    console.log(e);
+  const youtubeUrl = (event) => {
+    event.preventDefault();
+    let url = event.target[0].value;
+    url = url.split("v=")[1];
+    console.log(url);
+    setStyle((styleState) => ({
+      ...styleState,
+      youtube: {
+        ...styleState.youtube,
+        youtubeUrl: url,
+      },
+    }));
   };
+
+  const opts = {
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 1,
+    },
+  };
+
   return (
     <>
       <div className="menu">
@@ -62,28 +92,65 @@ function App() {
       </div>
 
       <Rnd
-        style={style(youtubeActive)}
+        style={style(youtube.youtubeActive)}
         default={{
-          x: 300,
-          y: 400,
-          width: 320,
-          height: 200,
+          x: 0,
+          y: 0,
+          width: 400,
+          height: 320,
+        }}
+        onResize={(e, direction, ref, delta, position) => {
+          setStyle((styleState) => ({
+            ...styleState,
+            youtube: {
+              ...styleState.youtube,
+              width: ref.style.width,
+              height: ref.style.height,
+            },
+          }));
         }}
       >
-        <div className="insideBlock">
-          <div className="youtube-url-form">
-            <div
-              className="input"
-              contentEditable="true"
-              data-placeholder="Youtube URL"
-            ></div>
-            <button onSubmit={youtubeUrl}>Submit</button>
-          </div>
+        <div
+          className="insideBlock"
+          style={{ width: youtube.width, margin: "10px" }}
+        >
+          <form onSubmit={(e) => youtubeUrl(e)}>
+            <div className="youtube-url-form">
+              <input
+                className="input"
+                contentEditable="true"
+                placeholder="Youtube URL"
+                type="text"
+                name="urlInput"
+              ></input>
+              <button type="submit" className="btn send-url" data-title="Send">
+                <img
+                  className="icon"
+                  src="/images/send.png"
+                  style={{ opacity: "90%" }}
+                ></img>
+              </button>
+            </div>
+          </form>
         </div>
+        {youtube.youtubeUrl !== "" ? (
+          <div className="insideBlock youtube">
+            <YouTube
+              videoId={youtube.youtubeUrl}
+              opts={{
+                width: Math.round(youtube.width.match(/(\d+)/)[0]) - 46,
+                height: Math.round(youtube.height.match(/(\d+)/)[0]) - 120,
+                opts,
+              }}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
       </Rnd>
 
       <Rnd
-        style={style(scenesActive)}
+        style={style(scences.scenesActive)}
         default={{
           x: 300,
           y: 400,
