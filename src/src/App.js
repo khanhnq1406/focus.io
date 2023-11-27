@@ -12,7 +12,7 @@ function App() {
       youtubeUrl: "",
       youtubePlayer: {},
     },
-    scences: { scenesActive: "none", height: "", width: "" },
+    scences: { scenesActive: "none", height: "", width: "", backgroundUrl: "" },
   });
 
   const { youtube, scences } = styleState;
@@ -50,6 +50,8 @@ function App() {
     }));
   };
 
+  // Youtube handle
+
   const youtubeUrl = (event) => {
     event.preventDefault();
     let url = event.target[0].value;
@@ -64,14 +66,6 @@ function App() {
     }));
   };
 
-  const opts = {
-    playerVars: {
-      // https://developers.google.com/youtube/player_parameters
-      autoplay: 1,
-      controls: 0,
-    },
-  };
-
   const onReadyHandle = function (event) {
     setStyle((styleState) => ({
       ...styleState,
@@ -84,13 +78,40 @@ function App() {
 
   const playVideoBtn = function () {
     console.log("Video player: ", youtube.youtubePlayer);
-    const playerState = youtube.youtubePlayer.getPlayerState();
-    console.log(playerState);
-    if (playerState === YoutubePlayerState.PLAYING) {
-      youtube.youtubePlayer.pauseVideo();
-    } else {
-      youtube.youtubePlayer.playVideo();
+    let playerState;
+    try {
+      playerState = youtube.youtubePlayer.getPlayerState();
+      console.log(playerState);
+      if (playerState === YoutubePlayerState.PLAYING) {
+        youtube.youtubePlayer.pauseVideo();
+      } else {
+        youtube.youtubePlayer.playVideo();
+      }
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  // Background handle
+
+  const backgroundUrl = (event) => {
+    event.preventDefault();
+    const url = event.target[0].value;
+    function load(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.addEventListener("load", resolve);
+        image.addEventListener("error", reject);
+        image.src = src;
+      });
+    }
+    load(url)
+      .then(() => {
+        document.body.style.backgroundImage = `url(${url})`;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <>
@@ -173,7 +194,6 @@ function App() {
                 width: Math.round(youtube.width.match(/(\d+)/)[0]) - 46,
                 height: Math.round(youtube.height.match(/(\d+)/)[0]) - 125,
                 playerVars: {
-                  // https://developers.google.com/youtube/player_parameters
                   autoplay: 1,
                 },
               }}
@@ -188,17 +208,41 @@ function App() {
       <Rnd
         style={style(scences.scenesActive)}
         default={{
-          x: 300,
-          y: 400,
-          width: 0,
-          height: 0,
+          x: 0,
+          y: 0,
+          width: 400,
+          height: 100,
         }}
+        enableResizing={false}
       >
         <button className="btn-close" onClick={buttonScenes}>
           <img className="icon close" src="/images/close.png"></img>
         </button>
-        <div>
-          <p>Scenes</p>
+        <div
+          className="insideBlock"
+          style={{
+            width: "2000px",
+            margin: "20px",
+          }}
+        >
+          <form onSubmit={(e) => backgroundUrl(e)}>
+            <div className="youtube-url-form">
+              <input
+                className="input"
+                contentEditable="true"
+                placeholder="Background URL"
+                type="text"
+                name="urlInput"
+              ></input>
+              <button type="submit" className="btn send-url" data-title="Send">
+                <img
+                  className="icon"
+                  src="/images/send.png"
+                  style={{ opacity: "80%" }}
+                ></img>
+              </button>
+            </div>
+          </form>
         </div>
       </Rnd>
     </>
