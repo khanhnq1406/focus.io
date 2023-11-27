@@ -77,7 +77,9 @@ body {
   vertical-align: middle;
   margin-left: -1px;
 }
-
+.btn .icon.play {
+  width: 22px;
+}
 .insideBlock {
   background-color: hsla(0, 0%, 100%, 0.05);
   border: 1px solid hsla(0, 0%, 100%, 0.1);
@@ -89,7 +91,10 @@ body {
 .youtube-url-form {
   overflow: hidden;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .input {
   background-color: rgba(18, 18, 18, 0.7);
   padding: 5px;
@@ -126,4 +131,14 @@ body {
   width: 20px;
   height: 20px;
   opacity: 60%;
+}
+
+.menu-divider {
+  background-color: #fff2;
+  border-radius: 2px;
+  height: 1px;
+  margin: 20px 0;
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+  width: 20px;
 }

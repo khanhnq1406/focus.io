@@ -2,6 +2,7 @@ import "./App.css";
 import { Rnd } from "react-rnd";
 import { useState } from "react";
 import YouTube from "react-youtube";
+import { YoutubePlayerState } from "./utils/constants";
 function App() {
   const [styleState, setStyle] = useState({
     youtube: {
@@ -9,6 +10,7 @@ function App() {
       height: "320",
       width: "400",
       youtubeUrl: "",
+      youtubePlayer: {},
     },
     scences: { scenesActive: "none", height: "", width: "" },
   });
@@ -66,13 +68,40 @@ function App() {
     playerVars: {
       // https://developers.google.com/youtube/player_parameters
       autoplay: 1,
+      controls: 0,
     },
   };
 
+  const onReadyHandle = function (event) {
+    setStyle((styleState) => ({
+      ...styleState,
+      youtube: {
+        ...styleState.youtube,
+        youtubePlayer: event.target,
+      },
+    }));
+  };
+
+  const playVideoBtn = function () {
+    console.log("Video player: ", youtube.youtubePlayer);
+    const playerState = youtube.youtubePlayer.getPlayerState();
+    console.log(playerState);
+    if (playerState === YoutubePlayerState.PLAYING) {
+      youtube.youtubePlayer.pauseVideo();
+    } else {
+      youtube.youtubePlayer.playVideo();
+    }
+  };
   return (
     <>
       <div className="menu">
         <div className="btn-wrapper">
+          <button data-title="Play" className="btn play" onClick={playVideoBtn}>
+            <img className="icon play" src="/images/play.png"></img>
+          </button>
+
+          <div className="menu-divider"></div>
+
           <button
             data-title="Youtube"
             className="btn youtube"
@@ -143,8 +172,12 @@ function App() {
               opts={{
                 width: Math.round(youtube.width.match(/(\d+)/)[0]) - 46,
                 height: Math.round(youtube.height.match(/(\d+)/)[0]) - 125,
-                opts,
+                playerVars: {
+                  // https://developers.google.com/youtube/player_parameters
+                  autoplay: 1,
+                },
               }}
+              onReady={onReadyHandle}
             />
           </div>
         ) : (
