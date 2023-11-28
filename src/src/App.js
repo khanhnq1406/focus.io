@@ -2,7 +2,7 @@ import "./App.css";
 import { Rnd } from "react-rnd";
 import { useState } from "react";
 import YouTube from "react-youtube";
-import { YoutubePlayerState } from "./utils/constants";
+import { YoutubePlayerState, PomodoroState } from "./utils/constants";
 function App() {
   const [styleState, setStyle] = useState({
     youtube: {
@@ -13,9 +13,15 @@ function App() {
       youtubePlayer: {},
     },
     scences: { scenesActive: "none", height: "", width: "", backgroundUrl: "" },
+    pomodoro: {
+      pomodoroActive: "none",
+      time: { hour: Number(), minute: Number(), second: Number() },
+      status: PomodoroState.PAUSED,
+      type: PomodoroState.FOCUS,
+    },
   });
 
-  const { youtube, scences } = styleState;
+  const { youtube, scences, pomodoro } = styleState;
 
   const style = function (isActive) {
     return {
@@ -46,6 +52,16 @@ function App() {
       scences: {
         ...styleState.scences,
         scenesActive: scences.scenesActive === "flex" ? "none" : "flex",
+      },
+    }));
+  };
+
+  const buttonPomodoro = function () {
+    setStyle((styleState) => ({
+      ...styleState,
+      pomodoro: {
+        ...styleState.pomodoro,
+        pomodoroActive: pomodoro.pomodoroActive === "flex" ? "none" : "flex",
       },
     }));
   };
@@ -113,6 +129,12 @@ function App() {
         console.log(err);
       });
   };
+
+  // Pomodoro timer handle
+
+  // setInterval(() => {
+  //   console.log("Hello");
+  // }, 1000);
   return (
     <>
       <div className="menu">
@@ -137,6 +159,14 @@ function App() {
             onClick={buttonScenes}
           >
             <img className="icon" src="/images/scenes.png"></img>
+          </button>
+
+          <button
+            data-title="Pomodoro"
+            className="btn background"
+            onClick={buttonPomodoro}
+          >
+            <img className="icon" src="/images/pomodoro.png"></img>
           </button>
         </div>
       </div>
@@ -211,7 +241,6 @@ function App() {
           x: 0,
           y: 0,
           width: 400,
-          height: 100,
         }}
         enableResizing={false}
       >
@@ -243,6 +272,105 @@ function App() {
               </button>
             </div>
           </form>
+        </div>
+      </Rnd>
+
+      <Rnd
+        style={style(pomodoro.pomodoroActive)}
+        default={{
+          x: 0,
+          y: 0,
+          width: 400,
+        }}
+        enableResizing={false}
+      >
+        <button className="btn-close" onClick={buttonPomodoro}>
+          <img className="icon close" src="/images/close.png"></img>
+        </button>
+        <div
+          style={{
+            justifyContent: "center",
+            textAlign: "center",
+            padding: "15px",
+          }}
+        >
+          <div>
+            <button className="btn-pomodoro-state active">
+              <p style={{ paddingLeft: "5px", paddingRight: "5px" }}>
+                Pomodoro
+              </p>
+            </button>
+            <button className="btn-pomodoro-state">
+              <p style={{ paddingLeft: "5px", paddingRight: "5px" }}>
+                Short Break
+              </p>
+            </button>
+            <button className="btn-pomodoro-state">
+              <p style={{ paddingLeft: "5px", paddingRight: "5px" }}>
+                Long Break
+              </p>
+            </button>
+          </div>
+          <div>
+            <p
+              style={{
+                fontSize: "65px",
+                fontWeight: "bold",
+                display: "content",
+                margin: "0px",
+              }}
+            >
+              05:00:00
+            </p>
+          </div>
+          <div>
+            <button className="btn-start-pomodoro">
+              <img
+                className="icon start-pomodoro"
+                src={
+                  pomodoro.status === PomodoroState.PLAYING
+                    ? "/images/pause.png"
+                    : "/images/play-pomodoro.png"
+                }
+                style={{ opacity: "80%" }}
+              ></img>
+            </button>
+          </div>
+        </div>
+      </Rnd>
+
+      <Rnd
+        style={style(pomodoro.pomodoroActive)}
+        default={{
+          x: 0,
+          y: 0,
+          width: 400,
+        }}
+        enableResizing={false}
+      >
+        <div
+          className="insideBlock"
+          style={{
+            marginBottom: "10px",
+          }}
+        >
+          <div style={{ width: "350px" }}>
+            <div
+              style={{
+                margin: "10px",
+                border: "1px solid hsla(0, 0%, 100%, 0.2)",
+                borderRadius: "5px",
+                padding: "5px",
+              }}
+            >
+              <input type="checkbox"></input>
+              Task name 1
+            </div>
+            <div style={{ margin: "10px" }}>Task name 2</div>
+            <div style={{ margin: "10px" }}>Task name 3</div>
+            <div style={{ margin: "10px" }}>Task name 4</div>
+            <div style={{ margin: "10px" }}>Task name 5</div>
+          </div>
         </div>
       </Rnd>
     </>

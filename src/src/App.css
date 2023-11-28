@@ -142,3 +142,55 @@ body {
   transform: rotate(90deg);
   width: 20px;
 }
+
+.btn-start-pomodoro {
+  background-color: transparent;
+  border: 0;
+  margin: 2px;
+  opacity: 90%;
+}
+
+.btn-start-pomodoro:hover {
+  /* background-color: #5a544e; */
+  /* border-radius: 10px;  */
+  opacity: 100%;
+}
+.icon.start-pomodoro {
+  width: 60px;
+  vertical-align: middle;
+  box-shadow: 3px 7px 5px rgba(0, 0, 0, 0.6);
+  -moz-box-shadow: 3px 7px 5px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 3px 7px 5px rgba(0, 0, 0, 0.6);
+  -o-box-shadow: 3px 7px 5px rgba(0, 0, 0, 0.6);
+  border-radius: 100px;
+}
+
+.icon.start-pomodoro:active {
+  transform: translateY(4px);
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6);
+  -moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6);
+  -o-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.6);
+  border-radius: 100px;
+}
+
+.btn-pomodoro-state {
+  background-color: transparent;
+  border: 0;
+  margin: 10px;
+  color: #fff;
+  opacity: 90%;
+  font-family: "Montserrat", sans-serif;
+  border-radius: 10px;
+}
+
+.btn-pomodoro-state.active {
+  background-color: hsla(0, 0%, 100%, 0.1);
+}
+
+.btn-pomodoro-state:active {
+  transform: translateY(2px);
+}
+.btn-pomodoro-state:hover {
+  background-color: hsla(0, 0%, 100%, 0.03);
+}
