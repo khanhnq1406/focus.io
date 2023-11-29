@@ -1,6 +1,6 @@
 import "./App.css";
 import { Rnd } from "react-rnd";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import YouTube from "react-youtube";
 import { YoutubePlayerState, PomodoroState } from "./utils/constants";
 function App() {
@@ -15,11 +15,12 @@ function App() {
     scences: { scenesActive: "none", height: "", width: "", backgroundUrl: "" },
     pomodoro: {
       pomodoroActive: "none",
-      time: { hour: Number(), minute: Number(), second: Number() },
       status: PomodoroState.PAUSED,
       type: PomodoroState.FOCUS,
     },
   });
+
+  const [intervalId, setIntervalId] = useState(null);
 
   const { youtube, scences, pomodoro } = styleState;
 
@@ -135,6 +136,57 @@ function App() {
   // setInterval(() => {
   //   console.log("Hello");
   // }, 1000);
+  const startTimer = function (event) {
+    event.preventDefault();
+    setStyle((styleState) => ({
+      ...styleState,
+      pomodoro: {
+        ...styleState.pomodoro,
+        status:
+          pomodoro.status === PomodoroState.PAUSED
+            ? PomodoroState.PLAYING
+            : PomodoroState.PAUSED,
+      },
+    }));
+  };
+
+  const [timer, setTimer] = useState(3700); // 25 minutes
+  const firstStart = useRef(true);
+  const tick = useRef();
+  useEffect(() => {
+    if (firstStart.current) {
+      console.log("first render, don't run useEffect for timer");
+      firstStart.current = !firstStart.current;
+      return;
+    }
+
+    console.log("subsequent renders");
+    console.log(pomodoro.status);
+    if (pomodoro.status === PomodoroState.PLAYING) {
+      tick.current = setInterval(() => {
+        setTimer((timer) => timer - 1);
+      }, 1000);
+    } else {
+      console.log("clear interval");
+      clearInterval(tick.current);
+    }
+
+    return () => clearInterval(tick.current);
+  }, [pomodoro.status]);
+  const dispSecondsAsMins = (seconds) => {
+    // 25:00
+    console.log("seconds " + seconds);
+    const hour = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const seconds_ = seconds % 60;
+    return (
+      (hour == 0 ? "00" : hour.toString()) +
+      ":" +
+      mins.toString() +
+      ":" +
+      (seconds_ == 0 ? "00" : seconds_.toString())
+    );
+  };
   return (
     <>
       <div className="menu">
@@ -320,11 +372,17 @@ function App() {
                 margin: "0px",
               }}
             >
-              05:00:00
+              {dispSecondsAsMins(timer)}
             </p>
           </div>
           <div>
             <button className="btn-start-pomodoro">
+              <img
+                className="icon start-pomodoro setting"
+                src="/images/setting.png"
+              ></img>
+            </button>
+            <button className="btn-start-pomodoro" onClick={startTimer}>
               <img
                 className="icon start-pomodoro"
                 src={
@@ -332,7 +390,12 @@ function App() {
                     ? "/images/pause.png"
                     : "/images/play-pomodoro.png"
                 }
-                style={{ opacity: "80%" }}
+              ></img>
+            </button>
+            <button className="btn-start-pomodoro">
+              <img
+                className="icon start-pomodoro setting"
+                src="/images/replay.png"
               ></img>
             </button>
           </div>

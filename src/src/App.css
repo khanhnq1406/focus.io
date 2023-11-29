@@ -147,12 +147,10 @@ body {
   background-color: transparent;
   border: 0;
   margin: 2px;
-  opacity: 90%;
+  opacity: 85%;
 }
 
 .btn-start-pomodoro:hover {
-  /* background-color: #5a544e; */
-  /* border-radius: 10px;  */
   opacity: 100%;
 }
 .icon.start-pomodoro {
@@ -193,4 +191,12 @@ body {
 }
 .btn-pomodoro-state:hover {
   background-color: hsla(0, 0%, 100%, 0.03);
+}
+
+.icon.start-pomodoro.setting {
+  width: 28px;
+}
+
+.icon.start-pomodoro.setting:active {
+  transform: translateY(2px);
 }
