@@ -3,6 +3,7 @@ import { Rnd } from "react-rnd";
 import { useEffect, useState, useRef } from "react";
 import YouTube from "react-youtube";
 import { YoutubePlayerState, PomodoroState } from "./utils/constants";
+import { sleep, wait } from "./utils/wait";
 function App() {
   const [styleState, setStyle] = useState({
     youtube: {
@@ -13,20 +14,22 @@ function App() {
       youtubePlayer: {},
     },
     scences: { scenesActive: "none", height: "", width: "", backgroundUrl: "" },
-    pomodoro: {
-      pomodoroActive: "none",
-      status: PomodoroState.PAUSED,
-      type: PomodoroState.FOCUS,
-      focusTime: 1500,
-      shortBreakTime: 300,
-      longBreakTime: 600,
-    },
     timerSetting: {
       timerSettingActive: "none",
     },
   });
 
-  const { youtube, scences, pomodoro, timerSetting } = styleState;
+  const [pomodoro, setPomodoro] = useState({
+    pomodoroActive: "none",
+    status: PomodoroState.PAUSED,
+    type: PomodoroState.FOCUS,
+    focusTime: 3, //1500
+    shortBreakTime: 4, // 300
+    longBreakTime: 5, // 600
+    counterLongBreak: 0,
+    longBreakInterval: 2,
+  });
+  const { youtube, scences, timerSetting } = styleState;
 
   const style = function (isActive) {
     return {
@@ -62,12 +65,9 @@ function App() {
   };
 
   const buttonPomodoro = function () {
-    setStyle((styleState) => ({
-      ...styleState,
-      pomodoro: {
-        ...styleState.pomodoro,
-        pomodoroActive: pomodoro.pomodoroActive === "flex" ? "none" : "flex",
-      },
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      pomodoroActive: pomodoro.pomodoroActive === "flex" ? "none" : "flex",
     }));
   };
 
@@ -139,29 +139,24 @@ function App() {
 
   const startTimer = function (event) {
     event.preventDefault();
-    setStyle((styleState) => ({
-      ...styleState,
-      pomodoro: {
-        ...styleState.pomodoro,
-        status:
-          pomodoro.status === PomodoroState.PAUSED
-            ? PomodoroState.PLAYING
-            : PomodoroState.PAUSED,
-      },
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      status:
+        pomodoro.status === PomodoroState.PAUSED
+          ? PomodoroState.PLAYING
+          : PomodoroState.PAUSED,
     }));
   };
 
   const [timer, setTimer] = useState(pomodoro.focusTime);
   const firstStart = useRef(true);
   const tick = useRef();
-  const firstDone = useRef(false);
   useEffect(() => {
     if (firstStart.current) {
       // first render, don't run useEffect for timer
       firstStart.current = !firstStart.current;
       return;
     }
-
     if (pomodoro.status === PomodoroState.PLAYING) {
       tick.current = setInterval(() => {
         setTimer((timer) => {
@@ -169,32 +164,44 @@ function App() {
           if (timer <= 0) {
             const audio = new Audio("/finish-sound.mp3");
             audio.play();
-            if (firstDone.current) {
-              firstDone.current = !firstDone.current;
-            } else {
-              setStyle((styleState) => ({
-                ...styleState,
-                pomodoro: {
-                  ...styleState.pomodoro,
-                  type: pomodoro.type++,
-                },
-              }));
-            }
-            if (pomodoro.type > PomodoroState.LONG_BREAK) {
-              setStyle((styleState) => ({
-                ...styleState,
-                pomodoro: {
-                  ...styleState.pomodoro,
-                  status: PomodoroState.PAUSED,
+            switch (pomodoro.type) {
+              case PomodoroState.FOCUS:
+                if (pomodoro.counterLongBreak < pomodoro.longBreakInterval) {
+                  setPomodoro((pomodoro) => ({
+                    ...pomodoro,
+                    type: PomodoroState.SHORT_BREAK,
+                    status: PomodoroState.PAUSED,
+                  }));
+                  return pomodoro.shortBreakTime;
+                } else {
+                  setPomodoro((pomodoro) => ({
+                    ...pomodoro,
+                    type: PomodoroState.LONG_BREAK,
+                    status: PomodoroState.PAUSED,
+                    counterLongBreak: 0,
+                  }));
+                  return pomodoro.longBreakTime;
+                }
+                break;
+
+              case PomodoroState.SHORT_BREAK:
+                setPomodoro((pomodoro) => ({
+                  ...pomodoro,
                   type: PomodoroState.FOCUS,
-                },
-              }));
-              return pomodoro.focusTime;
-            } else if (pomodoro.type === PomodoroState.SHORT_BREAK) {
-              firstDone.current = !firstDone.current;
-              return pomodoro.shortBreakTime;
-            } else if (pomodoro.type === PomodoroState.LONG_BREAK) {
-              return pomodoro.longBreakTime;
+                  status: PomodoroState.PAUSED,
+                  counterLongBreak: (pomodoro.counterLongBreak += 1),
+                }));
+                return pomodoro.focusTime;
+                break;
+              case PomodoroState.LONG_BREAK:
+                setPomodoro((pomodoro) => ({
+                  ...pomodoro,
+                  type: PomodoroState.FOCUS,
+                  status: PomodoroState.PAUSED,
+                }));
+                return pomodoro.focusTime;
+              default:
+                break;
             }
           }
           return timer;
@@ -203,7 +210,6 @@ function App() {
     } else {
       clearInterval(tick.current);
     }
-
     return () => clearInterval(tick.current);
   }, [pomodoro.status]);
 
@@ -235,36 +241,27 @@ function App() {
 
   const btnFocusTime = function (event) {
     event.preventDefault();
-    setStyle((styleState) => ({
-      ...styleState,
-      pomodoro: {
-        ...styleState.pomodoro,
-        type: PomodoroState.FOCUS,
-      },
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      type: PomodoroState.FOCUS,
     }));
     setTimer(pomodoro.focusTime);
   };
 
   const btnShortBreakTime = async function (event) {
     event.preventDefault();
-    setStyle((styleState) => ({
-      ...styleState,
-      pomodoro: {
-        ...styleState.pomodoro,
-        type: PomodoroState.SHORT_BREAK,
-      },
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      type: PomodoroState.SHORT_BREAK,
     }));
     setTimer(pomodoro.shortBreakTime);
   };
 
   const btnLongBreakTime = function (event) {
     event.preventDefault();
-    setStyle((styleState) => ({
-      ...styleState,
-      pomodoro: {
-        ...styleState.pomodoro,
-        type: PomodoroState.LONG_BREAK,
-      },
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      type: PomodoroState.LONG_BREAK,
     }));
     setTimer(pomodoro.longBreakTime);
   };
@@ -502,7 +499,7 @@ function App() {
         </div>
       </Rnd>
 
-      <Rnd
+      {/*<Rnd
         style={style(pomodoro.pomodoroActive)}
         default={{
           x: 0,
@@ -535,7 +532,7 @@ function App() {
             <div style={{ margin: "10px" }}>Task name 5</div>
           </div>
         </div>
-      </Rnd>
+            </Rnd>*/}
     </>
   );
 }
