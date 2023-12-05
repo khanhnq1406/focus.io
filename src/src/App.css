@@ -200,3 +200,60 @@ body {
 .icon.start-pomodoro.setting:active {
   transform: translateY(2px);
 }
+
+.settingTimer {
+  z-index: 1;
+  overflow: auto;
+  align-items: start;
+}
+
+.settingTimer::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-divider {
+  background-color: #fff2;
+  border-radius: 2px;
+  height: 1px;
+  margin: 20px 0;
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  width: 400px;
+  position: absolute;
+}
+
+.timer-setting-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding-bottom: 20px;
+  gap: 35px;
+}
+
+.timer-setting-item {
+}
+
+.timer-time-input {
+  width: 100px;
+  height: 35px;
+  background-color: #414041e1;
+  padding: 8px;
+  border: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: rgba(214, 213, 211, 0.874);
+  flex-grow: 1;
+  outline: 0;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  font-family: "Montserrat", sans-serif;
+  margin-top: 3px;
+  font-size: 16px;
+}
+
+.timer-setting-label {
+  font-size: 13px;
+}
+
+.timer-setting-item.long-break {
+  margin-left: 35px;
+}

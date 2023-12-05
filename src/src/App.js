@@ -3,7 +3,6 @@ import { Rnd } from "react-rnd";
 import { useEffect, useState, useRef } from "react";
 import YouTube from "react-youtube";
 import { YoutubePlayerState, PomodoroState } from "./utils/constants";
-import { sleep, wait } from "./utils/wait";
 function App() {
   const [styleState, setStyle] = useState({
     youtube: {
@@ -23,9 +22,9 @@ function App() {
     pomodoroActive: "none",
     status: PomodoroState.PAUSED,
     type: PomodoroState.FOCUS,
-    focusTime: 3, //1500
-    shortBreakTime: 4, // 300
-    longBreakTime: 5, // 600
+    focusTime: 1500, //1500
+    shortBreakTime: 300, // 300
+    longBreakTime: 600, // 600
     counterLongBreak: 0,
     longBreakInterval: 2,
   });
@@ -44,6 +43,21 @@ function App() {
       flexWrap: "wrap",
     };
   };
+  const timerStyle = function (isActive) {
+    return {
+      display: isActive,
+      alignItems: "start",
+      justifyContent: "center",
+      border: "1px solid hsla(0, 0%, 100%, 0.2)",
+      borderRadius: "10px",
+      backgroundColor: "hsla(0, 0%, 5%, 0.9)",
+      backdropFilter: "blur(20px)",
+      color: "hsla(0,0%,100%,0.8)",
+      flexWrap: "wrap",
+      transition: "opacity 0.2s ease-in 0.1s",
+    };
+  };
+
   const buttonYoutube = function () {
     setStyle((styleState) => ({
       ...styleState,
@@ -418,6 +432,65 @@ function App() {
         <button className="btn-close" onClick={buttonPomodoro}>
           <img className="icon close" src="/images/close.png"></img>
         </button>
+
+        <Rnd
+          style={timerStyle(timerSetting.timerSettingActive)}
+          default={{ width: 400, height: 241 }}
+          className="settingTimer"
+          enableResizing={false}
+        >
+          <p style={{ fontWeight: "bold" }}>Setting</p>
+          <button className="btn-close" onClick={settingTimer}>
+            <img className="icon close" src="/images/close.png"></img>
+          </button>
+          <div className="horizontal-divider" style={{ top: "33px" }}></div>
+
+          <div style={{ width: "370px", top: "50px", position: "absolute" }}>
+            <p style={{ fontWeight: "bold", fontSize: "15px" }}>
+              Time (minutes)
+            </p>
+
+            <div className="timer-setting-container">
+              <div className="timer-setting-item">
+                <label className="timer-setting-label">Pomodoro</label>
+                <input type="number" className="timer-time-input"></input>
+              </div>
+
+              <div className="timer-setting-item">
+                <label className="timer-setting-label">Short Break</label>
+                <input type="number" className="timer-time-input"></input>
+              </div>
+
+              <div className="timer-setting-item">
+                <label className="timer-setting-label">Long Break</label>
+                <input type="number" className="timer-time-input"></input>
+              </div>
+            </div>
+
+            <div className="timer-setting-container">
+              <div
+                className="timer-setting-item"
+                style={{
+                  width: "200px",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                <label
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "15px",
+                  }}
+                >
+                  Long Break interval
+                </label>
+              </div>
+              <div className="timer-setting-item long-break">
+                <input type="number" className="timer-time-input"></input>
+              </div>
+            </div>
+          </div>
+        </Rnd>
         <div
           style={{
             justifyContent: "center",
@@ -498,7 +571,6 @@ function App() {
           </div>
         </div>
       </Rnd>
-
       {/*<Rnd
         style={style(pomodoro.pomodoroActive)}
         default={{
