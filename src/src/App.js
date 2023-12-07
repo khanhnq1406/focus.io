@@ -178,15 +178,23 @@ function App() {
           if (timer <= 0) {
             const audio = new Audio("/finish-sound.mp3");
             audio.play();
+            console.log("============");
+            console.log("interval: ", pomodoro.longBreakInterval);
+            console.log("counter: ", pomodoro.counterLongBreak);
+            console.log("type: ", pomodoro.type);
             switch (pomodoro.type) {
               case PomodoroState.FOCUS:
-                if (pomodoro.counterLongBreak < pomodoro.longBreakInterval) {
+                console.log("Debug: focus");
+                if (
+                  pomodoro.counterLongBreak <
+                  pomodoro.longBreakInterval - 1
+                ) {
                   setPomodoro((pomodoro) => ({
                     ...pomodoro,
                     type: PomodoroState.SHORT_BREAK,
                     status: PomodoroState.PAUSED,
                   }));
-                  return pomodoro.shortBreakTime;
+                  timer = pomodoro.shortBreakTime;
                 } else {
                   setPomodoro((pomodoro) => ({
                     ...pomodoro,
@@ -194,18 +202,18 @@ function App() {
                     status: PomodoroState.PAUSED,
                     counterLongBreak: 0,
                   }));
-                  return pomodoro.longBreakTime;
+                  timer = pomodoro.longBreakTime;
                 }
                 break;
-
               case PomodoroState.SHORT_BREAK:
+                console.log("Short break");
                 setPomodoro((pomodoro) => ({
                   ...pomodoro,
                   type: PomodoroState.FOCUS,
                   status: PomodoroState.PAUSED,
                   counterLongBreak: (pomodoro.counterLongBreak += 1),
                 }));
-                return pomodoro.focusTime;
+                timer = pomodoro.focusTime;
                 break;
               case PomodoroState.LONG_BREAK:
                 setPomodoro((pomodoro) => ({
@@ -213,7 +221,7 @@ function App() {
                   type: PomodoroState.FOCUS,
                   status: PomodoroState.PAUSED,
                 }));
-                return pomodoro.focusTime;
+                timer = pomodoro.focusTime;
               default:
                 break;
             }
@@ -251,6 +259,22 @@ function App() {
           timerSetting.timerSettingActive === "flex" ? "none" : "flex",
       },
     }));
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+    }));
+    console.log(pomodoro.longBreakInterval);
+
+    switch (pomodoro.type) {
+      case PomodoroState.FOCUS:
+        setTimer(pomodoro.focusTime);
+        break;
+      case PomodoroState.SHORT_BREAK:
+        setTimer(pomodoro.shortBreakTime);
+        break;
+      case PomodoroState.LONG_BREAK:
+        setTimer(pomodoro.longBreakTime);
+        break;
+    }
   };
 
   const btnFocusTime = function (event) {
@@ -280,6 +304,22 @@ function App() {
     setTimer(pomodoro.longBreakTime);
   };
 
+  const setTimePomodoro = function (event) {
+    event.preventDefault();
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      [event.target.name]: (event.target.value * 60).toFixed(0),
+    }));
+    setTimer(pomodoro[event.target.name]);
+  };
+
+  const setLongBreakInterval = function (event) {
+    event.preventDefault();
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      longBreakInterval: event.target.value,
+    }));
+  };
   return (
     <>
       <div className="menu">
@@ -452,18 +492,38 @@ function App() {
 
             <div className="timer-setting-container">
               <div className="timer-setting-item">
+                {/* <form onSubmit={setTimePomodoro}> */}
                 <label className="timer-setting-label">Pomodoro</label>
-                <input type="number" className="timer-time-input"></input>
+                <input
+                  type="number"
+                  className="timer-time-input"
+                  defaultValue={pomodoro.focusTime / 60}
+                  onChange={setTimePomodoro}
+                  name="focusTime"
+                ></input>
+                {/* </form> */}
               </div>
 
               <div className="timer-setting-item">
                 <label className="timer-setting-label">Short Break</label>
-                <input type="number" className="timer-time-input"></input>
+                <input
+                  type="number"
+                  className="timer-time-input"
+                  defaultValue={pomodoro.shortBreakTime / 60}
+                  onChange={setTimePomodoro}
+                  name="shortBreakTime"
+                ></input>
               </div>
 
               <div className="timer-setting-item">
                 <label className="timer-setting-label">Long Break</label>
-                <input type="number" className="timer-time-input"></input>
+                <input
+                  type="number"
+                  className="timer-time-input"
+                  defaultValue={pomodoro.longBreakTime / 60}
+                  onChange={setTimePomodoro}
+                  name="longBreakTime"
+                ></input>
               </div>
             </div>
 
@@ -486,7 +546,12 @@ function App() {
                 </label>
               </div>
               <div className="timer-setting-item long-break">
-                <input type="number" className="timer-time-input"></input>
+                <input
+                  type="number"
+                  className="timer-time-input"
+                  defaultValue={pomodoro.longBreakInterval}
+                  onChange={setLongBreakInterval}
+                ></input>
               </div>
             </div>
           </div>
