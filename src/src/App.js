@@ -58,6 +58,8 @@ function App() {
     };
   };
 
+  // Youtube handle
+
   const buttonYoutube = function () {
     setStyle((styleState) => ({
       ...styleState,
@@ -67,25 +69,6 @@ function App() {
       },
     }));
   };
-
-  const buttonScenes = function () {
-    setStyle((styleState) => ({
-      ...styleState,
-      scences: {
-        ...styleState.scences,
-        scenesActive: scences.scenesActive === "flex" ? "none" : "flex",
-      },
-    }));
-  };
-
-  const buttonPomodoro = function () {
-    setPomodoro((pomodoro) => ({
-      ...pomodoro,
-      pomodoroActive: pomodoro.pomodoroActive === "flex" ? "none" : "flex",
-    }));
-  };
-
-  // Youtube handle
 
   const youtubeUrl = (event) => {
     event.preventDefault();
@@ -129,6 +112,16 @@ function App() {
 
   // Background handle
 
+  const buttonScenes = function () {
+    setStyle((styleState) => ({
+      ...styleState,
+      scences: {
+        ...styleState.scences,
+        scenesActive: scences.scenesActive === "flex" ? "none" : "flex",
+      },
+    }));
+  };
+
   const backgroundUrl = (event) => {
     event.preventDefault();
     const url = event.target[0].value;
@@ -150,6 +143,13 @@ function App() {
   };
 
   // Pomodoro timer handle
+
+  const buttonPomodoro = function () {
+    setPomodoro((pomodoro) => ({
+      ...pomodoro,
+      pomodoroActive: pomodoro.pomodoroActive === "flex" ? "none" : "flex",
+    }));
+  };
 
   const startTimer = function (event) {
     event.preventDefault();
@@ -320,6 +320,55 @@ function App() {
       longBreakInterval: event.target.value,
     }));
   };
+
+  // Todo list
+  const [toDoList, setToDoList] = useState({
+    isActive: "none",
+    lists: [
+      {
+        id: 1,
+        taskName: "Task 1",
+        isDone: false,
+      },
+      {
+        id: 2,
+        taskName: "Task 2",
+        isDone: false,
+      },
+      {
+        id: 3,
+        taskName: "Task 3",
+        isDone: false,
+      },
+    ],
+  });
+  const buttonToDoList = function () {
+    console.log(toDoList.isActive);
+    setToDoList((toDoList) => ({
+      ...toDoList,
+      isActive: toDoList.isActive === "flex" ? "none" : "flex",
+    }));
+  };
+
+  const taskClicked = function (event) {
+    event.preventDefault();
+    console.log("Clicked");
+  };
+  const displayTodoList = toDoList.lists
+    .sort((a, b) => a.id - b.id)
+    .map((value) => (
+      <div
+        className="insideBlock toDoTask"
+        draggable="true"
+        onDragEnd={taskClicked}
+        onDrop={taskClicked}
+      >
+        <input type="checkbox" className="toDo checkBox"></input>
+        <div style={{ margin: "5px", width: "fit-content" }}>
+          {value.taskName}
+        </div>
+      </div>
+    ));
   return (
     <>
       <div className="menu">
@@ -352,6 +401,14 @@ function App() {
             onClick={buttonPomodoro}
           >
             <img className="icon" src="/images/pomodoro.png"></img>
+          </button>
+
+          <button
+            data-title="Pomodoro"
+            className="btn background"
+            onClick={buttonToDoList}
+          >
+            <img className="icon" src="/images/todo.png" name="toDo"></img>
           </button>
         </div>
       </div>
@@ -636,8 +693,8 @@ function App() {
           </div>
         </div>
       </Rnd>
-      {/*<Rnd
-        style={style(pomodoro.pomodoroActive)}
+      <Rnd
+        style={style(toDoList.isActive)}
         default={{
           x: 0,
           y: 0,
@@ -645,31 +702,18 @@ function App() {
         }}
         enableResizing={false}
       >
-        <div
-          className="insideBlock"
-          style={{
-            marginBottom: "10px",
-          }}
-        >
-          <div style={{ width: "350px" }}>
-            <div
-              style={{
-                margin: "10px",
-                border: "1px solid hsla(0, 0%, 100%, 0.2)",
-                borderRadius: "5px",
-                padding: "5px",
-              }}
-            >
-              <input type="checkbox"></input>
-              Task name 1
-            </div>
-            <div style={{ margin: "10px" }}>Task name 2</div>
-            <div style={{ margin: "10px" }}>Task name 3</div>
-            <div style={{ margin: "10px" }}>Task name 4</div>
-            <div style={{ margin: "10px" }}>Task name 5</div>
-          </div>
+        <button className="btn-close" onClick={buttonToDoList}>
+          <img className="icon close" src="/images/close.png"></img>
+        </button>
+        <p style={{ fontWeight: "bold", fontSize: "17px" }}>To-do list</p>
+        <div className="list-wrapper">{displayTodoList}</div>
+        <div className="add-item">
+          <button>
+            <img src="/images/plus.png"></img>
+            Add Task
+          </button>
         </div>
-            </Rnd>*/}
+      </Rnd>
     </>
   );
 }
