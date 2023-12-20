@@ -324,23 +324,8 @@ function App() {
   // Todo list
   const [toDoList, setToDoList] = useState({
     isActive: "none",
-    lists: [
-      {
-        id: 1,
-        taskName: "Task 1",
-        isDone: false,
-      },
-      {
-        id: 2,
-        taskName: "Task 2",
-        isDone: false,
-      },
-      {
-        id: 3,
-        taskName: "Task 3",
-        isDone: false,
-      },
-    ],
+    isAddTask: "none",
+    lists: [],
   });
   const buttonToDoList = function () {
     console.log(toDoList.isActive);
@@ -350,25 +335,55 @@ function App() {
     }));
   };
 
-  const taskClicked = function (event) {
+  const removeTask = function (event, id) {
     event.preventDefault();
-    console.log("Clicked");
+    console.log(id);
+    setToDoList((toDoList) => ({
+      ...toDoList,
+      lists: toDoList.lists.filter((index) => Number(index.id) !== Number(id)),
+    }));
   };
+
   const displayTodoList = toDoList.lists
     .sort((a, b) => a.id - b.id)
     .map((value) => (
-      <div
-        className="insideBlock toDoTask"
-        draggable="true"
-        onDragEnd={taskClicked}
-        onDrop={taskClicked}
-      >
+      <div className="insideBlock toDoTask">
         <input type="checkbox" className="toDo checkBox"></input>
-        <div style={{ margin: "5px", width: "fit-content" }}>
+        <div style={{ margin: "5px", width: "300px", overflow: "hidden" }}>
           {value.taskName}
         </div>
+        <button
+          className="btn-remove-todo"
+          onClick={(e, id = value.id) => removeTask(e, id)}
+        >
+          <img src="/images/remove.png"></img>
+        </button>
       </div>
     ));
+
+  const btnAddTodo = function (event) {
+    event.preventDefault();
+    setToDoList((toDoList) => ({
+      ...toDoList,
+      isAddTask: toDoList.isAddTask === "" ? "none" : "",
+    }));
+  };
+
+  const btnSubmitTodo = function (event) {
+    event.preventDefault();
+    const newTask = {
+      id: toDoList.lists.length,
+      taskName: event.target[0].value,
+      isDone: false,
+    };
+    setToDoList((toDoList) => ({
+      ...toDoList,
+      isAddTask: toDoList.isAddTask === "" ? "none" : "",
+      lists: [...toDoList.lists, newTask],
+    }));
+    event.target[0].value = "";
+  };
+
   return (
     <>
       <div className="menu">
@@ -706,12 +721,46 @@ function App() {
           <img className="icon close" src="/images/close.png"></img>
         </button>
         <p style={{ fontWeight: "bold", fontSize: "17px" }}>To-do list</p>
-        <div className="list-wrapper">{displayTodoList}</div>
-        <div className="add-item">
-          <button>
+        <div className="list-wrapper">
+          {toDoList.lists.length !== 0 ? (
+            displayTodoList
+          ) : (
+            <div className="insideBlock empty-message">
+              <p>Your to-do list is empty.</p>
+              <p>Add tasks to get started!</p>
+            </div>
+          )}
+        </div>
+        <div
+          className="add-item"
+          style={{ display: toDoList.isAddTask === "" ? "none" : "" }}
+        >
+          <button onClick={btnAddTodo}>
             <img src="/images/plus.png"></img>
             Add Task
           </button>
+        </div>
+        <div
+          className="add-item active"
+          style={{ display: toDoList.isAddTask }}
+        >
+          <form onSubmit={btnSubmitTodo}>
+            <input
+              className="input to-do"
+              placeholder="Enter your task here..."
+            ></input>
+            <button data-title="Save" className="btn add-todo" type="submit">
+              <img src="/images/plus.png"></img>
+            </button>
+
+            <button
+              data-title="Cancel"
+              className="btn close-add-todo"
+              onClick={btnAddTodo}
+            >
+              <img src="/images/cancel.png"></img>
+            </button>
+          </form>
         </div>
       </Rnd>
     </>

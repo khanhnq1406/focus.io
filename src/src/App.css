@@ -318,3 +318,61 @@ body {
 .add-item button:hover img {
   opacity: 80%;
 }
+
+.add-item.active {
+  width: 350px;
+}
+.add-item.active button {
+  width: fit-content;
+  position: absolute;
+  right: 45px;
+}
+.add-item.active button:hover {
+  background-color: transparent;
+  border-radius: 0;
+}
+.add-item.active img {
+  /* margin-right: 50px; */
+  margin-bottom: 4px;
+}
+.add-item.active .btn.close-add-todo {
+  position: absolute;
+  right: 20px;
+}
+.input.to-do {
+  height: 50px;
+  padding: 12px;
+  width: 280px;
+  font-size: 16px;
+  margin-left: 10px;
+  background-color: transparent;
+  color: #ffffffe4;
+  border: 0;
+}
+
+.insideBlock .toDoTask button {
+  background-color: transparent;
+}
+
+.btn-remove-todo {
+  background-color: transparent;
+  border: 0;
+  width: fit-content;
+}
+
+.btn-remove-todo img {
+  width: 18px;
+  opacity: 65%;
+  padding-top: 4px;
+}
+
+.btn-remove-todo img:hover {
+  opacity: 90%;
+}
+
+.insideBlock.empty-message {
+  width: 350px;
+  text-align: center;
+  font-size: 20px;
+  padding: 25px;
+}
