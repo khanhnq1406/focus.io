@@ -376,3 +376,18 @@ body {
   font-size: 20px;
   padding: 25px;
 }
+
+.btn-set-default {
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  border: 0;
+  border-radius: 10px;
+  height: 40px;
+  width: 100px;
+  margin-bottom: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-set-default:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+}

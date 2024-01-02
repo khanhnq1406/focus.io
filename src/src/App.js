@@ -58,6 +58,52 @@ function App() {
     };
   };
 
+  // retrieve objects from localStorage
+  useEffect(() => {
+    try {
+      const youtubeUrl = JSON.parse(localStorage.getItem("youtubeUrl"));
+      if (youtubeUrl) {
+        setStyle((styleState) => ({
+          ...styleState,
+          youtube: {
+            ...styleState.youtube,
+            youtubeUrl: youtubeUrl,
+          },
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const toDoListLocalStorage = JSON.parse(localStorage.getItem("toDoList"));
+      if (toDoListLocalStorage) {
+        setToDoList((toDoList) => ({
+          ...toDoList,
+          isAddTask: toDoList.isAddTask === "" ? "none" : "",
+          lists: toDoListLocalStorage,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const scencesUrl = JSON.parse(localStorage.getItem("scencesUrl"));
+      if (scencesUrl) {
+        load(scencesUrl)
+          .then(() => {
+            document.body.style.backgroundImage = `url(${scencesUrl})`;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   // Youtube handle
 
   const buttonYoutube = function () {
@@ -74,7 +120,7 @@ function App() {
     event.preventDefault();
     let url = event.target[0].value;
     url = url.split("v=")[1];
-    console.log(url);
+    if (!url) return;
     setStyle((styleState) => ({
       ...styleState,
       youtube: {
@@ -82,6 +128,7 @@ function App() {
         youtubeUrl: url,
       },
     }));
+    localStorage.setItem("youtubeUrl", JSON.stringify(url));
   };
 
   const onReadyHandle = function (event) {
@@ -95,11 +142,9 @@ function App() {
   };
 
   const playVideoBtn = function () {
-    console.log("Video player: ", youtube.youtubePlayer);
     let playerState;
     try {
       playerState = youtube.youtubePlayer.getPlayerState();
-      console.log(playerState);
       if (playerState === YoutubePlayerState.PLAYING) {
         youtube.youtubePlayer.pauseVideo();
       } else {
@@ -122,17 +167,19 @@ function App() {
     }));
   };
 
+  function load(src) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener("load", resolve);
+      image.addEventListener("error", reject);
+      image.src = src;
+    });
+  }
+
   const backgroundUrl = (event) => {
     event.preventDefault();
     const url = event.target[0].value;
-    function load(src) {
-      return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.addEventListener("load", resolve);
-        image.addEventListener("error", reject);
-        image.src = src;
-      });
-    }
+    localStorage.setItem("scencesUrl", JSON.stringify(url));
     load(url)
       .then(() => {
         document.body.style.backgroundImage = `url(${url})`;
@@ -142,6 +189,19 @@ function App() {
       });
   };
 
+  const setScencesDefault = (event) => {
+    event.preventDefault();
+    const url =
+      "https://wallpaperxyz.com/wp-content/uploads/Chill-Lofi-Background-Wallpaper-Full-HD-Free-Download-for-PC-Laptop-Macbook-231121-Wallpaperxyz.com-57.jpg";
+    load(url)
+      .then(() => {
+        document.body.style.backgroundImage = `url(${url})`;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    localStorage.setItem("scencesUrl", JSON.stringify(url));
+  };
   // Pomodoro timer handle
 
   const buttonPomodoro = function () {
@@ -328,7 +388,6 @@ function App() {
     lists: [],
   });
   const buttonToDoList = function () {
-    console.log(toDoList.isActive);
     setToDoList((toDoList) => ({
       ...toDoList,
       isActive: toDoList.isActive === "flex" ? "none" : "flex",
@@ -337,11 +396,16 @@ function App() {
 
   const removeTask = function (event, id) {
     event.preventDefault();
-    console.log(id);
     setToDoList((toDoList) => ({
       ...toDoList,
       lists: toDoList.lists.filter((index) => Number(index.id) !== Number(id)),
     }));
+    localStorage.setItem(
+      "toDoList",
+      JSON.stringify(
+        toDoList.lists.filter((index) => Number(index.id) !== Number(id))
+      )
+    );
   };
 
   const displayTodoList = toDoList.lists
@@ -381,6 +445,10 @@ function App() {
       isAddTask: toDoList.isAddTask === "" ? "none" : "",
       lists: [...toDoList.lists, newTask],
     }));
+    localStorage.setItem(
+      "toDoList",
+      JSON.stringify([...toDoList.lists, newTask])
+    );
     event.target[0].value = "";
   };
 
@@ -509,6 +577,7 @@ function App() {
           style={{
             width: "2000px",
             margin: "20px",
+            marginBottom: "10px",
           }}
         >
           <form onSubmit={(e) => backgroundUrl(e)}>
@@ -530,6 +599,9 @@ function App() {
             </div>
           </form>
         </div>
+        <button className="btn-set-default" onClick={setScencesDefault}>
+          Set default
+        </button>
       </Rnd>
 
       <Rnd
