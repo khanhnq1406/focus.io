@@ -11,6 +11,7 @@ function App() {
       width: "400",
       youtubeUrl: "",
       youtubePlayer: {},
+      isPlaylist: false,
     },
     scences: { scenesActive: "none", height: "", width: "", backgroundUrl: "" },
     timerSetting: {
@@ -62,12 +63,22 @@ function App() {
   useEffect(() => {
     try {
       const youtubeUrl = JSON.parse(localStorage.getItem("youtubeUrl"));
+      const isPlaylist = JSON.parse(localStorage.getItem("isPlaylist"));
       if (youtubeUrl) {
         setStyle((styleState) => ({
           ...styleState,
           youtube: {
             ...styleState.youtube,
             youtubeUrl: youtubeUrl,
+          },
+        }));
+      }
+      if (isPlaylist) {
+        setStyle((styleState) => ({
+          ...styleState,
+          youtube: {
+            ...styleState.youtube,
+            isPlaylist: isPlaylist,
           },
         }));
       }
@@ -119,7 +130,33 @@ function App() {
   const youtubeUrl = (event) => {
     event.preventDefault();
     let url = event.target[0].value;
-    url = url.split("v=")[1];
+    const startListString = url.indexOf("list=");
+    if (startListString >= 0) {
+      const endListString =
+        url.indexOf("&", startListString) >= 0
+          ? url.indexOf("&", startListString)
+          : undefined;
+      url = url.substring(startListString + 5, endListString);
+      console.log(url.substring(startListString + 5, endListString));
+      setStyle((styleState) => ({
+        ...styleState,
+        youtube: {
+          ...styleState.youtube,
+          isPlaylist: true,
+        },
+      }));
+      localStorage.setItem("isPlaylist", JSON.stringify(true));
+    } else {
+      url = url.split("v=")[1];
+      setStyle((styleState) => ({
+        ...styleState,
+        youtube: {
+          ...styleState.youtube,
+          isPlaylist: false,
+        },
+      }));
+      localStorage.setItem("isPlaylist", JSON.stringify(false));
+    }
     if (!url) return;
     setStyle((styleState) => ({
       ...styleState,
@@ -541,7 +578,7 @@ function App() {
             </div>
           </form>
         </div>
-        {youtube.youtubeUrl !== "" ? (
+        {youtube.youtubeUrl !== "" && !youtube.isPlaylist ? (
           <div className="insideBlock youtube">
             <YouTube
               videoId={youtube.youtubeUrl}
@@ -550,6 +587,21 @@ function App() {
                 height: Math.round(youtube.height.match(/(\d+)/)[0]) - 125,
                 playerVars: {
                   autoplay: 1,
+                },
+              }}
+              onReady={onReadyHandle}
+            />
+          </div>
+        ) : youtube.youtubeUrl !== "" && youtube.isPlaylist ? (
+          <div className="insideBlock youtube">
+            <YouTube
+              opts={{
+                width: Math.round(youtube.width.match(/(\d+)/)[0]) - 46,
+                height: Math.round(youtube.height.match(/(\d+)/)[0]) - 125,
+                playerVars: {
+                  autoplay: 1,
+                  listType: "playlist",
+                  list: youtube.youtubeUrl,
                 },
               }}
               onReady={onReadyHandle}
