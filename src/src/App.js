@@ -524,7 +524,7 @@ function App() {
           </button>
 
           <button
-            data-title="Pomodoro"
+            data-title="To-do list"
             className="btn background"
             onClick={buttonToDoList}
           >
