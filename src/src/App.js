@@ -551,6 +551,7 @@ function App() {
             },
           }));
         }}
+        disableDragging={true}
       >
         <button className="btn-close" onClick={buttonYoutube}>
           <img className="icon close" src="/images/close.png"></img>
